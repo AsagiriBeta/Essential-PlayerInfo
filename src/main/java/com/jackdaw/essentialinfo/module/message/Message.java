@@ -9,6 +9,7 @@ import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.player.PlayerChatEvent;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
+import com.velocitypowered.api.proxy.ServerConnection;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import org.slf4j.Logger;
 
@@ -52,9 +53,10 @@ public class Message extends AbstractComponent {
     private void broadcast(Player player, String message) {
         String playerName = player.getUsername();
         String sendMessage;
-        Optional<String> currentServerName = player.getCurrentServer()
+        Optional<ServerConnection> serverConnection = player.getCurrentServer();
+        Optional<String> currentServerName = serverConnection
                 .map(serverConnection -> serverConnection.getServerInfo().getName());
-        Optional<RegisteredServer> currentServer = player.getCurrentServer()
+        Optional<RegisteredServer> currentServer = serverConnection
                 .map(serverConnection -> serverConnection.getServer());
         // Audience message
         if (currentServerName.isPresent()) {
@@ -86,4 +88,3 @@ public class Message extends AbstractComponent {
         }
     }
 }
-
