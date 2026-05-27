@@ -52,10 +52,13 @@ public class Message extends AbstractComponent {
     private void broadcast(Player player, String message) {
         String playerName = player.getUsername();
         String sendMessage;
-        Optional<RegisteredServer> currentServer = player.getCurrentServer().map(serverConnection -> serverConnection.getServer());
+        Optional<String> currentServerName = player.getCurrentServer()
+                .map(serverConnection -> serverConnection.getServerInfo().getName());
+        Optional<RegisteredServer> currentServer = player.getCurrentServer()
+                .map(serverConnection -> serverConnection.getServer());
         // Audience message
-        if (player.getCurrentServer().isPresent()) {
-            String server = player.getCurrentServer().get().getServerInfo().getName();
+        if (currentServerName.isPresent()) {
+            String server = currentServerName.get();
             if (this.isCustomTextEnabled) {
                 if (this.chatText.isEmpty()) return;
                 sendMessage = this.chatText.replace("%player%", playerName).replace("%server%", server) + message;
@@ -83,5 +86,4 @@ public class Message extends AbstractComponent {
         }
     }
 }
-
 
