@@ -4,11 +4,8 @@
 
 This is a very lightweight plugin for Velocity proxy.
 
-Used API of Velocity 3.1.2, so it may only support Velocity version 3.1.2 or above, and other versions have not been
+Used API of Velocity 3.5.0-SNAPSHOT, so it may only support Velocity version 3.5.0 or above, and other versions have not been
 tested.
-
-**Please aware that this branch is a snapshot, we have used some new APIs under Velocity 3.1.2-SNAPSHOT. This Plugin
-probably not work in lower version.**
 
 ## Core Features
 
@@ -163,7 +160,7 @@ Clone the repository
 
 Open a command prompt/terminal to the repository directory
 
-run 'gradlew build'
+run 'gradlew build' (JDK 21 required)
 
 The built jar file will be in build/libs/
 
