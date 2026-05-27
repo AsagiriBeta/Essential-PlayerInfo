@@ -1,6 +1,6 @@
 package com.jackdaw.essentialinfo.module;
 
-import javax.inject.Qualifier;
+import com.google.inject.BindingAnnotation;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
@@ -14,7 +14,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  *
  * @see com.velocitypowered.api.plugin.annotation.DataDirectory
  */
-@Qualifier
+@BindingAnnotation
 @Target({FIELD, PARAMETER, METHOD})
 @Retention(RUNTIME)
 public @interface VelocityDataDir {}
