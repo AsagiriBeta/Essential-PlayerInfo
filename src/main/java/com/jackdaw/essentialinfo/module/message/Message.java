@@ -5,7 +5,6 @@ import com.jackdaw.essentialinfo.auxiliary.configuration.SettingManager;
 import com.jackdaw.essentialinfo.auxiliary.serializer.Deserializer;
 import com.jackdaw.essentialinfo.module.AbstractComponent;
 import com.jackdaw.essentialinfo.module.VelocityDataDir;
-import com.velocitypowered.api.event.PostOrder;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.player.PlayerChatEvent;
 import com.velocitypowered.api.proxy.Player;
@@ -16,6 +15,7 @@ import org.slf4j.Logger;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Objects;
+import java.util.Optional;
 
 public class Message extends AbstractComponent {
     // class for Server
@@ -33,7 +33,7 @@ public class Message extends AbstractComponent {
     }
 
     // listener of player chat
-    @Subscribe(order = PostOrder.EARLY)
+    @Subscribe(priority = 100)
     public void onPlayerChat(PlayerChatEvent event) {
         Player player = event.getPlayer();
         String message = event.getMessage();
@@ -52,6 +52,7 @@ public class Message extends AbstractComponent {
     private void broadcast(Player player, String message) {
         String playerName = player.getUsername();
         String sendMessage;
+        Optional<RegisteredServer> currentServer = player.getCurrentServer().map(serverConnection -> serverConnection.getServer());
         // Audience message
         if (player.getCurrentServer().isPresent()) {
             String server = player.getCurrentServer().get().getServerInfo().getName();
@@ -76,12 +77,11 @@ public class Message extends AbstractComponent {
         }
         // send message to other server
         for (RegisteredServer s : this.proxyServer.getAllServers()) {
-            if (!Objects.equals(s, player.getCurrentServer().get().getServer())) {
+            if (currentServer.isEmpty() || !Objects.equals(s, currentServer.get())) {
                 s.sendMessage(Deserializer.miniMessage(sendMessage));
             }
         }
     }
 }
-
 
 
