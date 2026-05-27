@@ -55,9 +55,9 @@ public class Message extends AbstractComponent {
         String sendMessage;
         Optional<ServerConnection> serverConnection = player.getCurrentServer();
         Optional<String> currentServerName = serverConnection
-                .map(serverConnection -> serverConnection.getServerInfo().getName());
+                .map(connection -> connection.getServerInfo().getName());
         Optional<RegisteredServer> currentServer = serverConnection
-                .map(serverConnection -> serverConnection.getServer());
+                .map(connection -> connection.getServer());
         // Audience message
         if (currentServerName.isPresent()) {
             String server = currentServerName.get();
