@@ -15,7 +15,7 @@ import java.nio.file.Files;
  * Configure the setting if a specific module is enable or disable.
  *
  * @author WDRshadow, Lokeyli
- * @version v3.2
+ * @version v3.3
  */
 public class SettingManager {
     private final Logger logger;
@@ -23,7 +23,7 @@ public class SettingManager {
     private final File configFile;
 
     // use for confirming the setting version is the same with the plugin
-    private static final String lastVersion = "v3.2";
+    private static final String lastVersion = "v3.3";
 
     private boolean tabListEnabled;
     private int displayMode;
@@ -80,7 +80,7 @@ public class SettingManager {
     private void saveDefaultConfig() throws IOException {
         if (!workingDirectory.exists()) {
             boolean aBoolean = workingDirectory.mkdir();
-            if (!aBoolean) logger.warn("Could Not make a new config.toml file.");
+            if (!aBoolean) logger.warn("无法创建配置目录。");
         }
         if (configFile.exists()) {
             Toml toml = new Toml().read(new File(workingDirectory, "config.toml"));
@@ -93,7 +93,7 @@ public class SettingManager {
             } catch (Exception ignored) {
             }
             boolean aBoolean = configFile.delete();
-            if (!aBoolean) logger.warn("Could Not delete old config file.");
+            if (!aBoolean) logger.warn("无法删除旧配置文件。");
         }
         newConfig();
     }

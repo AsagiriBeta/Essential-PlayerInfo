@@ -56,17 +56,16 @@ public class ConnectionTips extends AbstractComponent {
                 if (serverChangeText.isEmpty()) return;
                 sendMessage = this.serverChangeText.replace("%player%", playerName).replace("%previousServer%", previousServer).replace("%server%", server);
             } else {
-                // "<gray>%player%: <u><click:run_command:'/server %previousServer%'><hover:show_text:'Click to switch.'>[%previousServer%]</hover></click></u> -> <u><click:run_command:'/server %server%'><hover:show_text:'Click to switch.'>[%server%]</hover></click></u></gray>"
                 sendMessage = String.join(""
                         , "<gray>"
                         , playerName
                         , ": <u><click:run_command:'/server "
                         , previousServer
-                        , "'><hover:show_text:'Click to switch.'>["
+                        , "'><hover:show_text:'点击切换服务器。'>["
                         , previousServer
                         , "]</hover></click></u> -> <u><click:run_command:'/server "
                         , server
-                        , "'><hover:show_text:'Click to switch.'>["
+                        , "'><hover:show_text:'点击切换服务器。'>["
                         , server
                         , "]</hover></click></u></gray>"
                 );
@@ -79,15 +78,14 @@ public class ConnectionTips extends AbstractComponent {
                 if (connectionText.isEmpty()) return;
                 sendMessage = this.connectionText.replace("%player%", playerName).replace("%server%", server);
             } else {
-                // "<gray>%player%: Connect to <u><hover:show_text:'Click to switch.'><click:run_command:'/server %server%'>[%server%]</click></hover></u>.</gray>"
                 sendMessage = String.join(""
                         , "<gray>"
                         , playerName
-                        , ": Connect to <u><hover:show_text:'Click to switch.'><click:run_command:'/server "
+                        , ": 已连接到 <u><hover:show_text:'点击切换服务器。'><click:run_command:'/server "
                         , server
                         , "'>["
                         , server
-                        , "]</click></hover></u>.</gray>"
+                        , "]</click></hover></u>。</gray>"
                 );
             }
             for (RegisteredServer s : this.proxyServer.getAllServers()) {
@@ -104,11 +102,10 @@ public class ConnectionTips extends AbstractComponent {
             if (disconnectionText.isEmpty()) return;
             sendMessage = this.disconnectionText.replace("%player%", playerName);
         } else {
-            // "<gray>%player%: Exit the servers.</gray>"
             sendMessage = String.join(""
                     , "<gray>"
                     , playerName
-                    , ": Exit the servers.</gray>"
+                    , ": 已退出服务器。</gray>"
             );
         }
         for (RegisteredServer s : this.proxyServer.getAllServers()) {

@@ -1,6 +1,7 @@
 package com.jackdaw.essentialinfo.module;
 
 import com.google.inject.AbstractModule;
+import com.jackdaw.essentialinfo.EssentialInfo;
 import com.jackdaw.essentialinfo.auxiliary.configuration.SettingManager;
 import com.velocitypowered.api.proxy.ProxyServer;
 import org.slf4j.Logger;
@@ -14,6 +15,7 @@ import java.nio.file.Path;
  */
 public class JackdawModule extends AbstractModule {
 
+    private final EssentialInfo plugin;
     private final ProxyServer proxyServer;
     private final Logger logger;
     private final Path dataDirectory;
@@ -22,12 +24,14 @@ public class JackdawModule extends AbstractModule {
     /**
      * Instantiates a new Jackdaw module.
      *
+     * @param plugin        the plugin instance, expect to be provided by the Main Class.
      * @param proxyServer   the proxy server, expect to be provided by velocity.
      * @param logger        the logger, expect to be provided by velocity.
      * @param dataDirectory the data directory, expect to be provided by velocity.
      * @param setting       the setting, expect to be provided by the Main Class, i.e. EssentialInfo.
      */
-    public JackdawModule(ProxyServer proxyServer, Logger logger, Path dataDirectory, SettingManager setting) {
+    public JackdawModule(EssentialInfo plugin, ProxyServer proxyServer, Logger logger, Path dataDirectory, SettingManager setting) {
+        this.plugin = plugin;
         this.proxyServer = proxyServer;
         this.logger = logger;
         this.dataDirectory = dataDirectory;
@@ -36,10 +40,10 @@ public class JackdawModule extends AbstractModule {
 
     @Override
     protected void configure() {
+        bind(EssentialInfo.class).toInstance(plugin);
         bind(ProxyServer.class).toInstance(proxyServer);
         bind(Logger.class).toInstance(logger);
         bind(Path.class).annotatedWith(VelocityDataDir.class).toInstance(dataDirectory);
         bind(SettingManager.class).toInstance(setting);
     }
 }
-

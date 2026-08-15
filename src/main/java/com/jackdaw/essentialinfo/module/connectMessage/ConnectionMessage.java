@@ -35,6 +35,10 @@ public class ConnectionMessage extends AbstractComponent {
 
     @Subscribe
     public void onConnect(ServerConnectedEvent event) {
+        // Only greet on the first backend connection, not every server switch.
+        if (event.getPreviousServer().isPresent()) {
+            return;
+        }
         connectMessage(event);
     }
 
@@ -58,11 +62,11 @@ public class ConnectionMessage extends AbstractComponent {
         } else {
             // default connection message
             sendMessage = String.join(""
-                    , "<yellow>-------------------------------\nWelcome to "
+                    , "<yellow>-------------------------------\n欢迎来到 "
                     , serverName
-                    , "\n-------------------------------\nYou can click the servers below to change your connecting server.\n"
+                    , "\n-------------------------------\n你可以点击下方服务器名称切换连接的服务器。\n"
                     , serverListMap(serverList, currentServer.getServerInfo().getName())
-                    , "\n-------------------------------\nYou can use <u><light_purple><click:run_command:'/remember'><hover:show_text:'Click to run command'>/remember</hover></click></light_purple></u> to set your default connecting server.\n-------------------------------</yellow>"
+                    , "\n-------------------------------\n你可以使用 <u><light_purple><click:run_command:'/remember'><hover:show_text:'点击执行命令'>/remember</hover></click></light_purple></u> 设置默认连接服务器。\n-------------------------------</yellow>"
             );
         }
         player.sendMessage(Deserializer.miniMessage(sendMessage));
@@ -70,16 +74,20 @@ public class ConnectionMessage extends AbstractComponent {
 
     private @NotNull String serverListMap(@NotNull List<String> serverList, String currentServer) {
         // mapping the serverList to a single String and high line the currentServer.
-        String str = "";
+        StringBuilder str = new StringBuilder();
         for (String serverName : serverList) {
             if (serverName.equals(currentServer)) {
-                // <red><u>[Mirror]</u></red>
-                str = String.join("", str, "<red><u>[", serverName, "]</u></red>");
+                str.append("<red><u>[").append(serverName).append("]</u></red>");
             } else {
-                // <green><hover:show_text:'Click to connect to [Survival]'><click:run_command:'/server Survival'>[Survival]</click></hover></green>
-                str = String.join("", str, "<green><hover:show_text:'Click to connect to [", serverName, "]'><click:run_command:'/server ", serverName, "'>[", serverName, "]</click></hover></green>");
+                str.append("<green><hover:show_text:'点击连接到 [")
+                        .append(serverName)
+                        .append("]'><click:run_command:'/server ")
+                        .append(serverName)
+                        .append("'>[")
+                        .append(serverName)
+                        .append("]</click></hover></green>");
             }
         }
-        return str;
+        return str.toString();
     }
 }

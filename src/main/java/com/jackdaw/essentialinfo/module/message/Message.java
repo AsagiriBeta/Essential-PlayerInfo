@@ -14,7 +14,7 @@ import com.velocitypowered.api.proxy.server.RegisteredServer;
 import org.slf4j.Logger;
 
 import java.nio.file.Path;
-import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -34,14 +34,19 @@ public class Message extends AbstractComponent {
     }
 
     // listener of player chat
+    // Do not deny/modify PlayerChatEvent result: on 1.19.1+ that can kick players (signed chat).
     @Subscribe(priority = 100)
     public void onPlayerChat(PlayerChatEvent event) {
         Player player = event.getPlayer();
         String message = event.getMessage();
         if (this.isCommandToBroadcast) {
-            HashMap parsedMessage = parser.parse(message);
-            if (parsedMessage.get("broadcastTag").equals(true)) {
-                broadcast(player, parsedMessage.get("content").toString());
+            Map<String, Object> parsedMessage = parser.parse(message);
+            Object broadcastTag = parsedMessage.get("broadcastTag");
+            if (Boolean.TRUE.equals(broadcastTag)) {
+                Object content = parsedMessage.get("content");
+                if (content != null) {
+                    broadcast(player, content.toString());
+                }
             }
         } else {
             broadcast(player, message);
@@ -57,7 +62,7 @@ public class Message extends AbstractComponent {
         Optional<String> currentServerName = serverConnection
                 .map(connection -> connection.getServerInfo().getName());
         Optional<RegisteredServer> currentServer = serverConnection
-                .map(connection -> connection.getServer());
+                .map(ServerConnection::getServer);
         // Audience message
         if (currentServerName.isPresent()) {
             String server = currentServerName.get();
@@ -65,11 +70,10 @@ public class Message extends AbstractComponent {
                 if (this.chatText.isEmpty()) return;
                 sendMessage = this.chatText.replace("%player%", playerName).replace("%server%", server) + message;
             } else {
-                // "<gray><u><click:run_command:'/server %server%'><hover:show_text:'Click to switch.'>[%server%]</hover></click></u> <%player%> "
                 sendMessage = String.join(""
                         , "<gray><u><click:run_command:'/server "
                         , server
-                        , "'><hover:show_text:'Click to switch.'>["
+                        , "'><hover:show_text:'点击切换服务器。'>["
                         , server
                         , "]</hover></click></u> <"
                         , playerName

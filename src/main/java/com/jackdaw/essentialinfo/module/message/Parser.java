@@ -11,12 +11,11 @@ public abstract class Parser {
 
     public static Parser getParser() {
         Parser parser = singletonParser;
-        if (parser != null)
-        {
+        if (parser != null) {
             return parser;
         }
-        synchronized (MessageParser.class){
-            if (parser == null){
+        synchronized (MessageParser.class) {
+            if (singletonParser == null) {
                 singletonParser = new MessageParser();
             }
             return singletonParser;

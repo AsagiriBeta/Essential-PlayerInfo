@@ -1,43 +1,44 @@
 # essential-playerinfo
-# Configuration version. !Please do not change this option!
+# 配置版本。请勿修改此选项！
 [version]
-    version = "v3.2"
+    version = "v3.3"
 
-# Global tablist
+# 全局 Tab 列表
 [tabList]
     enabled=true
+    # `0` 生存，`1` 创造，`2` 冒险，`3` 旁观。
     displayMode=3
 
-# Global massage
+# 全局聊天
 [message]
     enabled=true
     command-to-broadcast=false
 
-# Ping List
+# Ping 列表
 [pingList]
     enabled = true
 
-# Connection Tips
+# 进服/切换提示
 [connectionTips]
     enabled = true
 
-# Remember me
+# 记住我
 [rememberMe]
     enabled = true
 
-# Connection Message
+# 进服欢迎消息
 [connectMessage]
     enabled = true
-    serverName = "Example Server"
+    serverName = "示例服务器"
 
-# Custom Message Setting
+# 自定义消息设置
 [customText]
     enabled = false
-    # All custom text need to be in the miniMessage format in version v3.1.0 (Config file version v3.2) or higher.
-    # You can use MiniMessage Viewer to preview your text. https://webui.adventure.kyori.net/
-    connectionText = "<gray>%player%: Connect to <u><hover:show_text:'Click to switch.'><click:run_command:'/server %server%'>[%server%]</click></hover></u>.</gray>"
-    serverChangeText = "<gray>%player%: <u><click:run_command:'/server %previousServer%'><hover:show_text:'Click to switch.'>[%previousServer%]</hover></click></u> -> <u><click:run_command:'/server %server%'><hover:show_text:'Click to switch.'>[%server%]</hover></click></u></gray>"
-    disconnectionText = "<gray>%player%: Exit the servers.</gray>"
-    chatText = "<gray><u><click:run_command:'/server %server%'><hover:show_text:'Click to switch.'>[%server%]</hover></click></u> <%player%> "
+    # v3.1.0（配置版本 v3.2）及以上需使用 MiniMessage 格式。
+    # 可用 MiniMessage Viewer 预览：https://webui.adventure.kyori.net/
+    connectionText = "<gray>%player%: 已连接到 <u><hover:show_text:'点击切换服务器。'><click:run_command:'/server %server%'>[%server%]</click></hover></u>。</gray>"
+    serverChangeText = "<gray>%player%: <u><click:run_command:'/server %previousServer%'><hover:show_text:'点击切换服务器。'>[%previousServer%]</hover></click></u> -> <u><click:run_command:'/server %server%'><hover:show_text:'点击切换服务器。'>[%server%]</hover></click></u></gray>"
+    disconnectionText = "<gray>%player%: 已退出服务器。</gray>"
+    chatText = "<gray><u><click:run_command:'/server %server%'><hover:show_text:'点击切换服务器。'>[%server%]</hover></click></u> <%player%> "
     tabListText = "[%server%] %player%"
-    connectionMessageText = "<yellow>-------------------------------\nWelcome to %serverName%!\n-------------------------------\nYou can click the servers below to change your connecting server.\n%serverList%\n-------------------------------\nYou can use <u><light_purple><click:run_command:'/remember'><hover:show_text:'Click to run command'>/remember</hover></click></light_purple></u> to set your default connecting server.\n-------------------------------</yellow>"
+    connectionMessageText = "<yellow>-------------------------------\n欢迎来到 %serverName%！\n-------------------------------\n你可以点击下方服务器名称切换连接的服务器。\n%serverList%\n-------------------------------\n你可以使用 <u><light_purple><click:run_command:'/remember'><hover:show_text:'点击执行命令'>/remember</hover></click></light_purple></u> 设置默认连接服务器。\n-------------------------------</yellow>"

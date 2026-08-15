@@ -28,7 +28,8 @@ import java.nio.file.Path;
         id = "essential-info",
         name = "Essential Info",
         version = BuildConstants.VERSION,
-        authors = {"Team-Jackdaw"}
+        authors = {"Team-Jackdaw"},
+        description = "Lightweight global tablist, chat and connection tips for Velocity 4."
 )
 public class EssentialInfo {
 
@@ -47,42 +48,42 @@ public class EssentialInfo {
         this.logger = logger;
         this.dataDirectory = dataDirectory;
         this.setting = getSettingManager();
-        this.injector = Guice.createInjector(new JackdawModule(proxyServer, logger, dataDirectory, this.setting));
+        this.injector = Guice.createInjector(new JackdawModule(this, proxyServer, logger, dataDirectory, this.setting));
     }
 
     // register the listeners
     @Subscribe
     public void onProxyInitialization(ProxyInitializeEvent event) {
         if (setting == null) {
-            logger.error("Main: Can't load config file.");
+            logger.error("主程序：无法加载配置文件。");
             return;
         }
 
         if (setting.isTabListEnabled()) {
             TabList tabList = injector.getInstance(TabList.class);
-            this.moduleOn(tabList, "Main: Loaded TabList.");
+            this.moduleOn(tabList, "主程序：已加载 TabList。");
             this.proxyServer.getScheduler().buildTask(this, tabList::pingUpdate)
                 .repeat(50L, java.util.concurrent.TimeUnit.MILLISECONDS).schedule();
         }
 
         if (setting.isMessageEnabled()) {
-            this.moduleOn(injector.getInstance(Message.class), "Main: Loaded Message.");
+            this.moduleOn(injector.getInstance(Message.class), "主程序：已加载 Message。");
         }
 
         if (setting.isPingListEnabled()) {
-            this.moduleOn(injector.getInstance(PingList.class), "Main: Loaded PingList.");
+            this.moduleOn(injector.getInstance(PingList.class), "主程序：已加载 PingList。");
         }
 
         if (setting.isConnectionTipsEnabled()) {
-            this.moduleOn(injector.getInstance(ConnectionTips.class), "Main: Loaded ConnectionTips.");
+            this.moduleOn(injector.getInstance(ConnectionTips.class), "主程序：已加载 ConnectionTips。");
         }
 
         if (setting.isRememberMeEnabled()) {
-            this.moduleOn(injector.getInstance(RememberMe.class), "Main: Loaded RememberMe.");
+            this.moduleOn(injector.getInstance(RememberMe.class), "主程序：已加载 RememberMe。");
         }
 
         if (setting.isConnectionMessageEnabled()) {
-            this.moduleOn(injector.getInstance(ConnectionMessage.class), "Main: Loaded ConnectionMessage.");
+            this.moduleOn(injector.getInstance(ConnectionMessage.class), "主程序：已加载 ConnectionMessage。");
         }
     }
 
@@ -92,7 +93,7 @@ public class EssentialInfo {
         try {
             setting = new SettingManager(dataDirectory.toFile(), logger);
         } catch (IOException ioException) {
-            System.out.println(ioException.getMessage());
+            logger.error("主程序：读取配置失败。", ioException);
             return null;
         }
         return setting;
@@ -104,4 +105,3 @@ public class EssentialInfo {
     }
 
 }
-

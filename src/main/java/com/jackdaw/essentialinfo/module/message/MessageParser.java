@@ -6,22 +6,22 @@ import java.util.regex.Pattern;
 
 public class MessageParser extends Parser {
 
+    private static final Pattern BROADCAST_PATTERN = Pattern.compile("^\\s*#\\s*(.+)$");
+
     @Override
     public HashMap<String, Object> parse(String message) {
         HashMap<String, Object> parsingResult = super.parse(message);
-        parsingResult.put("broadcastTag", null);
+        parsingResult.put("broadcastTag", false);
         parsingResult.put("content", null);
         allowBroadcasting(message, parsingResult);
         return parsingResult;
     }
 
     private void allowBroadcasting(String message, HashMap<String, Object> parsingResult) {
-        Pattern broadcastTagPattern = Pattern.compile("(\\s*#?\\s*)(.+)");
-        Matcher broadcastTagMatcher = broadcastTagPattern.matcher(message);
+        Matcher broadcastTagMatcher = BROADCAST_PATTERN.matcher(message);
         if (broadcastTagMatcher.matches()) {
-            System.out.println(broadcastTagMatcher.groupCount());
-            parsingResult.replace("broadcastTag", !broadcastTagMatcher.group(1).isBlank());
-            parsingResult.replace("content", broadcastTagMatcher.group(broadcastTagMatcher.groupCount()));
+            parsingResult.put("broadcastTag", true);
+            parsingResult.put("content", broadcastTagMatcher.group(1));
         }
     }
 }

@@ -2,65 +2,60 @@
 
 ## Introduce
 
-This is a very lightweight plugin for Velocity proxy.
+这是一个轻量级的 Velocity 代理端插件。
 
-Used API of Velocity 3.5.0-SNAPSHOT, so it may only support Velocity version 3.5.0 or above, and other versions have not been
-tested.
+基于 **Velocity API 4.1.0-SNAPSHOT**（对应 Velocity 4.x）。官方稳定版为 **4.0.0**，开发文档当前推荐依赖为 `4.1.0-SNAPSHOT`。Velocity 4.x 需要 **Java 25+**。
 
 ## Core Features
 
 ### Global PingList
 
-Display the player ID on the Minecraft server list.
+在 Minecraft 服务器列表中显示在线玩家 ID。
 
 ![PingList.png][1]
 
 ### Global TabList
 
-Show global players on the TabList.
+在 Tab 列表中显示全服玩家。
 
-- You can now customize the display mode and display message of global players. (see config)
+- 可自定义显示模式与显示文本（见配置）。
 
 ![TabList2.png][2]
 
 ### Connection Message
 
-Welcome message will be sent to every player when they connect to a register server. And provide a way to click to
-switch servers.
+玩家首次连接到后端服务器时发送欢迎消息，并可点击切换服务器。
 
-- You can now customize the message in config file.
+- 可在配置文件中自定义消息。
 
 ![ConnectMessage.png][3]
 
 ### Global Chat & ConnectionTips
 
-The most basic cross-server chat function. & Simple connection tips.
+基础跨服聊天与进服/切换提示。
 
-- You can now click the _[ServerName]_ to switch to the target server.
+- 可点击 _[服务器名]_ 切换到目标服务器。
 
 ![customText2.png][4]
 
 ### Remember my initial connecting server
 
-A feature to let your players set the initial connecting server as they like. The default setting is "remember their
-last connected server".
+让玩家自行设置初始连接服务器。默认行为是“记住上次连接的服务器”。
 
-Players can use command to set the mode and server.
+玩家可用命令设置模式与服务器：
 
-- Set default mode
-  - Description: If set to `preset`, players will connect to a specific server every time when they connect to the
-    proxy. This initial server can be set by another command. If set to `last`, players will connect to the server they
-    last exit.
-  - Usage: `/remember mode <last, preset>`
-  - Default: `last`
+- 设置默认模式
+  - 说明：设为 `preset` 时，每次进服都会连接到指定服务器；设为 `last` 时，会连接到上次离开的服务器。
+  - 用法：`/remember mode <last, preset>`
+  - 默认：`last`
 
 
-- Set initial server
-  - Description: Only work if the default mode is `preset`. Set the initial connecting server.
-  - Usage: `/remember server <servername>`
-  - Default: `null` (If null, players will connect to the default server of the proxy)
+- 设置初始服务器
+  - 说明：仅在模式为 `preset` 时生效。
+  - 用法：`/remember server <servername>`
+  - 默认：`null`（为空则使用代理默认服务器）
 
-Players can also use click to command with `/remember` or connection message.
+也可通过点击命令 `/remember` 或欢迎消息进行设置。
 
 ![RememberMe.png][5]
 
@@ -68,81 +63,76 @@ Players can also use click to command with `/remember` or connection message.
 
 ### Customize your message text
 
-You can change the custom text in the config file. You can use MiniMessage to color the message.
+可在配置文件中修改自定义文本，支持 MiniMessage 着色。
 
-You can use `%player%`, `%server%` ,`%previousServer%` and `%serverList%` to replace the variable.
+可用占位符：`%player%`、`%server%`、`%previousServer%`、`%serverList%`。
 
 ### Command-to-broadcast
 
-For those who don't want their servers to be continuous global broadcasts, we provide an option to enable "command to
-broadcast". Which means the chat messages in these servers would be broadcast only when the beginning of the message
-is "#".
+若不想让某些服的聊天一直全局广播，可开启 “command-to-broadcast”。开启后，仅当消息以 `#` 开头时才会跨服广播。
 
 ## Config
 
-**Notes**
+**注意事项**
 
-- **Please aware that the custom text has been updated to `MiniMessage` format in version `v3.2.0` or higher. You should
-  use `MiniMessage` format to customize the message. You can use [MiniMessage Viewer](https://webui.adventure.kyori.net/)
-  to preview your text.**
+- **自 `v3.2.0` 起自定义文本使用 `MiniMessage` 格式。** 可用 [MiniMessage Viewer](https://webui.adventure.kyori.net/) 预览。
 
-- If you update from an old version, your config file will be recreated, and your setting will be reset to default. We
-  recommend that you should back up your old config file before you updating this plugin.
+- 若从旧版本升级，配置版本变更时会重建配置文件并重置为默认值。升级前请备份旧配置。
 
-- You can now disable any custom message by setting a component blank with `""`.
+- 可将任意自定义文本设为 `""` 以禁用该条消息。
 
-The default config file is shown below:
+默认配置如下：
 
     # essential-playerinfo
-    # Configuration version. !Please do not change this option!
+    # 配置版本。请勿修改此选项！
     [version]
-        version="v3.2"
+        version="v3.3"
     
-    # Global tablist
+    # 全局 Tab 列表
     [tabList]
         enabled=true
-        # `0` for survival, `1` for creative, `2` for adventure, `3` for spectator.
+        # `0` 生存，`1` 创造，`2` 冒险，`3` 旁观。
         displayMode=3
     
-    # Global massage
+    # 全局聊天
     [message]
         enabled=true
         command-to-broadcast=false
     
-    # Ping List
+    # Ping 列表
     [pingList]
         enabled=true
     
-    # Connection Tips
+    # 进服/切换提示
     [connectionTips]
         enabled=true
     
-    # Remember me
+    # 记住我
     [rememberMe]
         enabled=true
     
-    # Connection Message
+    # 进服欢迎消息
     [connectMessage]
         enabled=true
-        serverName = "Example Server"
+        serverName = "示例服务器"
     
-    # Custom Message Setting
+    # 自定义消息设置
     [customText]
         enabled = false
-        # All custom text need to be in the miniMessage format in version v3.1.0 (Config file version v3.2) or higher.
-        # You can use MiniMessage Viewer to preview your text. https://webui.adventure.kyori.net/
-        connectionText = "<gray>%player%: Connect to <u><hover:show_text:'Click to switch.'><click:run_command:'/server %server%'>[%server%]</click></hover></u>.</gray>"
-        serverChangeText = "<gray>%player%: <u><click:run_command:'/server %previousServer%'><hover:show_text:'Click to switch.'>[%previousServer%]</hover></click></u> -> <u><click:run_command:'/server %server%'><hover:show_text:'Click to switch.'>[%server%]</hover></click></u></gray>"
-        disconnectionText = "<gray>%player%: Exit the servers.</gray>"
-        chatText = "<gray><u><click:run_command:'/server %server%'><hover:show_text:'Click to switch.'>[%server%]</hover></click></u> <%player%> "
+        connectionText = "<gray>%player%: 已连接到 <u><hover:show_text:'点击切换服务器。'><click:run_command:'/server %server%'>[%server%]</click></hover></u>。</gray>"
+        serverChangeText = "<gray>%player%: <u><click:run_command:'/server %previousServer%'><hover:show_text:'点击切换服务器。'>[%previousServer%]</hover></click></u> -> <u><click:run_command:'/server %server%'><hover:show_text:'点击切换服务器。'>[%server%]</hover></click></u></gray>"
+        disconnectionText = "<gray>%player%: 已退出服务器。</gray>"
+        chatText = "<gray><u><click:run_command:'/server %server%'><hover:show_text:'点击切换服务器。'>[%server%]</hover></click></u> <%player%> "
         tabListText = "[%server%] %player%"
-        connectionMessageText = "<yellow>-------------------------------\nWelcome to %serverName%!\n-------------------------------\nYou can click the servers below to change your connecting server.\n%serverList%\n-------------------------------\nYou can use <u><light_purple><click:run_command:'/remember'><hover:show_text:'Click to run command'>/remember</hover></click></light_purple></u> to set your default connecting server.\n-------------------------------</yellow>"
+        connectionMessageText = "<yellow>-------------------------------\n欢迎来到 %serverName%！\n-------------------------------\n你可以点击下方服务器名称切换连接的服务器。\n%serverList%\n-------------------------------\n你可以使用 <u><light_purple><click:run_command:'/remember'><hover:show_text:'点击执行命令'>/remember</hover></click></light_purple></u> 设置默认连接服务器。\n-------------------------------</yellow>"
 
 ## To do list
 
 - [x] Get the server list and provide a way to click to switch.
 
 - [x] Add an advance way to customize the messages including some extra feature (By `miniMessage` format).
+
+- [x] Adapt to Velocity 4.x (Java 25, API 4.1.0-SNAPSHOT).
 
 - [ ] Reconfigure the whole plugin before programming next feature.
 
@@ -160,7 +150,7 @@ Clone the repository
 
 Open a command prompt/terminal to the repository directory
 
-run 'gradlew build' (JDK 21 required)
+run `gradlew build`（需要 **JDK 25**）
 
 The built jar file will be in build/libs/
 

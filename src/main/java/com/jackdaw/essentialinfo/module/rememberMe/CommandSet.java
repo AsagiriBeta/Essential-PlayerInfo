@@ -31,17 +31,16 @@ public final class CommandSet implements SimpleCommand {
     @Override
     public void execute(@NotNull Invocation invocation) {
         CommandSource source = invocation.source();
+        if (!(source instanceof Player player)) {
+            source.sendMessage(Deserializer.miniMessage("<red>该命令仅限玩家使用。</red>"));
+            return;
+        }
+
         String[] args = invocation.arguments();
-        Player player = (Player) source;
         UserInfoManager userInfoManager = new UserInfoManager(workingDirectory, logger, player);
-        Component error = Deserializer.miniMessage(String.join(" "
-                , "<dark_gray><yellow>-------------------------------\nThis is RememberMe module of Essential-PlayerInfo plugin.\nSet mode: <light_purple><u><click:suggest_command:'/remember mode '>/remember mode <last, preset></click></u></light_purple>\nSet server: <light_purple><u><click:suggest_command:'/remember server '>/remember server <servername></click></u></light_purple>\nYour default mode is <u><red>"
-                , userInfoManager.getUserInfo().getDefaultMode()
-                , "</red></u>.\nYour initial server is <red><u>"
-                , userInfoManager.getUserInfo().getServer()
-                , "</u></red>.\n-------------------------------</yellow></dark_gray>"));
-        if (invocation.arguments().length < 2) {
-            source.sendMessage(error);
+        Component help = helpMessage(userInfoManager);
+        if (args.length < 2) {
+            source.sendMessage(help);
             return;
         }
         String command = args[0];
@@ -49,23 +48,36 @@ public final class CommandSet implements SimpleCommand {
         if (command.equals("mode")) {
             if (parameter.equalsIgnoreCase("preset") || parameter.equalsIgnoreCase("last")) {
                 setMode(parameter, player, userInfoManager);
-                source.sendMessage(Component.text("Your default mode is set to " + parameter));
+                source.sendMessage(Deserializer.miniMessage("<green>你的默认模式已设置为 <yellow>" + parameter + "</yellow>。</green>"));
                 return;
             }
         }
         if (command.equals("server")) {
-            RegisteredServer initialServer = this.proxyServer.getAllServers()
-                    .stream()
-                    .filter(s -> s.getServerInfo().getName().equals(parameter))
-                    .findFirst()
-                    .orElse(null);
-            if (!(initialServer == null)) {
+            RegisteredServer initialServer = this.proxyServer.getServer(parameter).orElse(null);
+            if (initialServer != null) {
                 setServer(parameter, userInfoManager);
-                source.sendMessage(Component.text("Your default server is set to " + parameter));
+                source.sendMessage(Deserializer.miniMessage("<green>你的默认服务器已设置为 <yellow>" + parameter + "</yellow>。</green>"));
                 return;
             }
         }
-        source.sendMessage(error);
+        source.sendMessage(help);
+    }
+
+    private static @NotNull Component helpMessage(@NotNull UserInfoManager userInfoManager) {
+        String server = userInfoManager.getUserInfo().getServer();
+        if (server == null || server.isBlank()) {
+            server = "未设置";
+        }
+        return Deserializer.miniMessage(String.join("",
+                "<dark_gray><yellow>-------------------------------\n",
+                "这是 Essential-PlayerInfo 的 RememberMe 模块。\n",
+                "设置模式：<light_purple><u><click:suggest_command:'/remember mode '>/remember mode [last|preset]</click></u></light_purple>\n",
+                "设置服务器：<light_purple><u><click:suggest_command:'/remember server '>/remember server [服务器名]</click></u></light_purple>\n",
+                "你当前的默认模式为 <u><red>",
+                userInfoManager.getUserInfo().getDefaultMode(),
+                "</red></u>。\n你当前的初始服务器为 <red><u>",
+                server,
+                "</u></red>。\n-------------------------------</yellow></dark_gray>"));
     }
 
     @Override

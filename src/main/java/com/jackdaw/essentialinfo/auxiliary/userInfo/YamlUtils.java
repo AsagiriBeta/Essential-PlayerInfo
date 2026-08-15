@@ -2,27 +2,33 @@ package com.jackdaw.essentialinfo.auxiliary.userInfo;
 
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.DumperOptions.FlowStyle;
+import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.SafeConstructor;
+import org.yaml.snakeyaml.representer.Representer;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 public final class YamlUtils {
-    public YamlUtils() {
+    private YamlUtils() {
     }
 
-    public static HashMap readFile(File file) throws FileNotFoundException {
-        Yaml yaml = new Yaml();
-        Map ret;
-        try {
-            ret = yaml.load(new FileReader(file));
-        } catch (FileNotFoundException e) {
-            ret = null;
+    @SuppressWarnings("unchecked")
+    public static HashMap<String, Object> readFile(File file) throws IOException {
+        LoaderOptions loaderOptions = new LoaderOptions();
+        Yaml yaml = new Yaml(new SafeConstructor(loaderOptions));
+        try (FileInputStream inputStream = new FileInputStream(file)) {
+            Object loaded = yaml.load(inputStream);
+            if (!(loaded instanceof Map<?, ?> map)) {
+                return new HashMap<>();
             }
-            if (ret == null)
-                ret = new HashMap();
-            return new HashMap(ret);
+            return new HashMap<>((Map<String, Object>) map);
+        }
     }
 
     public static void writeFile(File file, Object object) throws IOException {
@@ -30,7 +36,10 @@ public final class YamlUtils {
         options.setIndent(2);
         options.setPrettyFlow(true);
         options.setDefaultFlowStyle(FlowStyle.BLOCK);
-        Yaml yaml = new Yaml(options);
-        yaml.dump(object, new FileWriter(file));
+        Representer representer = new Representer(options);
+        Yaml yaml = new Yaml(representer, options);
+        try (FileWriter writer = new FileWriter(file)) {
+            yaml.dump(object, writer);
+        }
     }
 }
