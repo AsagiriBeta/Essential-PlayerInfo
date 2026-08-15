@@ -1,14 +1,20 @@
-name: Build
+name: Build and Release
 
+# 仅在主分支推送时运行，节省 Actions 额度；不在 pull_request 上触发。
 on:
   push:
-  pull_request:
+    branches:
+      - main
 
 permissions:
-  contents: read
+  contents: write
+
+concurrency:
+  group: build-release-main
+  cancel-in-progress: true
 
 jobs:
-  build:
+  build-and-release:
     runs-on: ubuntu-latest
 
     steps:
@@ -26,3 +32,24 @@ jobs:
 
       - name: Build
         run: ./gradlew clean build --no-daemon
+
+      - name: Resolve version
+        id: meta
+        run: |
+          VERSION="$(./gradlew -q properties | awk '/^version:/ {print $2; exit}')"
+          SHORT_SHA="$(echo "${GITHUB_SHA}" | cut -c1-7)"
+          TAG="v${VERSION}-${SHORT_SHA}"
+          {
+            echo "version=${VERSION}"
+            echo "tag=${TAG}"
+            echo "name=Essential-PlayerInfo ${VERSION} (${SHORT_SHA})"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.meta.outputs.tag }}
+          name: ${{ steps.meta.outputs.name }}
+          files: build/libs/*.jar
+          generate_release_notes: true
+          make_latest: true
