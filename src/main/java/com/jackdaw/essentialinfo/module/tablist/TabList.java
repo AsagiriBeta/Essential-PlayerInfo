@@ -13,10 +13,10 @@ import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.player.TabListEntry;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.nio.file.Path;
-import java.util.concurrent.TimeUnit;
 
 public class TabList extends AbstractComponent {
     // class server
@@ -48,7 +48,7 @@ public class TabList extends AbstractComponent {
      * @param fromPlayer the profile of this TabListEntry
      * @return the TabListEntry belongs to fromPlayer, or null if not found
      */
-    public static TabListEntry findTabListEntry(@NotNull Player toPlayer, @NotNull Player fromPlayer) {
+    public static @Nullable TabListEntry findTabListEntry(@NotNull Player toPlayer, @NotNull Player fromPlayer) {
         return toPlayer.getTabList().getEntries()
                 .stream()
                 .filter(t -> t.getProfile().getId().equals(fromPlayer.getGameProfile().getId()))
@@ -101,6 +101,7 @@ public class TabList extends AbstractComponent {
         if (toPlayer.getCurrentServer().get().getServerInfo().getName().equals(serverName)) return;
         if (toPlayer.getTabList().containsEntry(fromPlayer.getUniqueId()))
             toPlayer.getTabList().removeEntry(fromPlayer.getUniqueId());
+        // Velocity 4: prefer TabListEntry.Builder over deprecated TabList#buildEntry
         toPlayer.getTabList().addEntry(TabListEntry.builder()
                 .displayName(getDisplayName(serverName, fromPlayer))
                 .latency((int) fromPlayer.getPing())
@@ -124,22 +125,26 @@ public class TabList extends AbstractComponent {
         return Deserializer.miniMessage(displayMessage);
     }
 
-    // normal pingUpdate, public method used for registering the scheduler in plugin. Need to improve!
+    // normal pingUpdate, public method used for registering the scheduler in plugin.
     public void pingUpdate() {
-        for (Player toPlayer : this.proxyServer.getAllPlayers())
+        for (Player toPlayer : this.proxyServer.getAllPlayers()) {
             for (Player fromPlayer : this.proxyServer.getAllPlayers()) {
-                if (fromPlayer.getCurrentServer().isPresent()) {
-                    if (toPlayer.getTabList().containsEntry(fromPlayer.getUniqueId())) {
-                        if (!toPlayer.equals(fromPlayer) &&
-                                fromPlayer.getCurrentServer().isPresent() &&
-                                toPlayer.getCurrentServer().isPresent()) {
-                            if (!toPlayer.getCurrentServer().get().equals(fromPlayer.getCurrentServer().get()))
-                                // ! setLatency seems not work !
-                                findTabListEntry(toPlayer, fromPlayer).setLatency((int) fromPlayer.getPing());
+                if (fromPlayer.getCurrentServer().isEmpty()) {
+                    continue;
+                }
+                if (toPlayer.getTabList().containsEntry(fromPlayer.getUniqueId())) {
+                    if (!toPlayer.equals(fromPlayer)
+                            && toPlayer.getCurrentServer().isPresent()
+                            && !toPlayer.getCurrentServer().get().equals(fromPlayer.getCurrentServer().get())) {
+                        TabListEntry entry = findTabListEntry(toPlayer, fromPlayer);
+                        if (entry != null) {
+                            entry.setLatency((int) fromPlayer.getPing());
                         }
-                    } else
-                        addTabListEntry(toPlayer, fromPlayer, fromPlayer.getCurrentServer().get().getServerInfo().getName());
+                    }
+                } else {
+                    addTabListEntry(toPlayer, fromPlayer, fromPlayer.getCurrentServer().get().getServerInfo().getName());
                 }
             }
+        }
     }
 }

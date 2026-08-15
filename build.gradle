@@ -1,7 +1,7 @@
 plugins {
     id 'java'
     id 'eclipse'
-    id "org.jetbrains.gradle.plugin.idea-ext" version "1.0.1"
+    id "org.jetbrains.gradle.plugin.idea-ext" version "1.1.10"
     id 'pmd'
 }
 
@@ -10,9 +10,11 @@ pmd {
 }
 
 group = 'com.jackdaw'
-version = '3.2.0-snapshot'
+version = '3.3.0-snapshot'
 
-def velocityApiVersion = '3.5.0-SNAPSHOT'
+// Official PaperMC docs currently use velocity-api 4.1.0-SNAPSHOT (latest).
+// Stable release: 4.0.0. Velocity 4.x requires Java 25+.
+def velocityApiVersion = '4.1.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
@@ -25,10 +27,9 @@ repositories {
 dependencies {
     compileOnly "com.velocitypowered:velocity-api:${velocityApiVersion}"
     annotationProcessor "com.velocitypowered:velocity-api:${velocityApiVersion}"
-
 }
 
-def targetJavaVersion = 21
+def targetJavaVersion = 25
 java {
     def javaVersion = JavaVersion.toVersion(targetJavaVersion)
     sourceCompatibility = javaVersion

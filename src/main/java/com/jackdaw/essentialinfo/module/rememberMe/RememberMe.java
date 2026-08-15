@@ -1,6 +1,7 @@
 package com.jackdaw.essentialinfo.module.rememberMe;
 
 import com.google.inject.Inject;
+import com.jackdaw.essentialinfo.EssentialInfo;
 import com.jackdaw.essentialinfo.auxiliary.configuration.SettingManager;
 import com.jackdaw.essentialinfo.auxiliary.userInfo.UserInfoManager;
 import com.jackdaw.essentialinfo.module.AbstractComponent;
@@ -20,10 +21,12 @@ import java.nio.file.Path;
 public class RememberMe extends AbstractComponent {
     // class server
     private final File workingDirectory;
+    private final EssentialInfo plugin;
 
     @Inject
-    public RememberMe(ProxyServer proxyServer, Logger logger, @VelocityDataDir Path velocityDataDir, SettingManager setting) {
+    public RememberMe(EssentialInfo plugin, ProxyServer proxyServer, Logger logger, @VelocityDataDir Path velocityDataDir, SettingManager setting) {
         super(proxyServer, logger, velocityDataDir, setting);
+        this.plugin = plugin;
         this.workingDirectory = new File(velocityDataDir.toFile(), "user");
         checkFolder();
         commandSet();
@@ -33,7 +36,7 @@ public class RememberMe extends AbstractComponent {
     private void checkFolder(){
         if(!workingDirectory.exists()){
             if(!workingDirectory.mkdir()){
-                logger.error("RememberMe: Can't make a new folder.");
+                logger.error("RememberMe：无法创建用户数据文件夹。");
             }
         }
     }
@@ -41,7 +44,10 @@ public class RememberMe extends AbstractComponent {
     //command manager, register the command "remember".
     private void commandSet() {
         CommandManager commandManager = proxyServer.getCommandManager();
-        CommandMeta commandMeta = commandManager.metaBuilder("remember").build();
+        // Velocity 4 recommends associating commands with the owning plugin.
+        CommandMeta commandMeta = commandManager.metaBuilder("remember")
+                .plugin(plugin)
+                .build();
         CommandSet commandSet = new CommandSet(proxyServer, logger, workingDirectory);
         commandManager.register(commandMeta, commandSet);
     }
@@ -53,11 +59,7 @@ public class RememberMe extends AbstractComponent {
         if (initialServerName == null) {
             return;
         }
-        RegisteredServer initialServer = this.proxyServer.getAllServers()
-                .stream()
-                .filter(s -> s.getServerInfo().getName().equals(initialServerName))
-                .findFirst()
-                .orElse(null);
+        RegisteredServer initialServer = this.proxyServer.getServer(initialServerName).orElse(null);
         if (initialServer == null) return;
         event.setInitialServer(initialServer);
     }
